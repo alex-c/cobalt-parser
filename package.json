@@ -1,0 +1,27 @@
+{
+  "name": "cobalt-parser",
+  "version": "0.1.0",
+  "description": "A parser for the Cobalt programming language.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alex-c/cobalt-parser.git"
+  },
+  "keywords": [
+    "cobalt",
+    "parser",
+    "programming language"
+  ],
+  "author": "Alexandre Charoy",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/alex-c/cobalt-parser/issues"
+  },
+  "homepage": "https://github.com/alex-c/cobalt-parser#readme"
+}
