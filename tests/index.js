@@ -1,1 +1,3 @@
-var tests = {}
+var tests = {
+    lexerTests: require('./lexer')
+}
