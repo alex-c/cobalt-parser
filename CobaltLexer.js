@@ -5,11 +5,17 @@ const {CompilerError, CobaltSyntaxError} = require('./errors');
 */
 function CobaltLexer() {
 
-    //A list of keywords that can delimit a word (identifier, literal or keyword).
+    //A list of characters that can delimit a word (identifier, literal or keyword).
     this.delimiters = [' ','\t','\n','\r',':',';','&','|','!','+','-','*','/','~','=','>','<','(',')'];
 
     //A validator for identifiers
     this.identifierValidator = /^[a-z,A-Z]+\w*$/;
+
+    //A validator for integers
+    this.integerValidator = /^\d+$/;
+
+    //A validator for floating point numbers
+    this.floatValidator = /^\d+[.]\d+$/;
 
 }
 
@@ -95,10 +101,14 @@ CobaltLexer.prototype.tokenize = function(code) {
                 let word = code.substring(position, wordLimit);
                 if (word == 'def') {
                     tokens.push({type: 'declaration', line: line});
-                } else if (word == 'print') {
+                } else if (word == 'stdin') {
+                    tokens.push({type: 'input', line: line});
+                } else if (word == 'stdout') {
                     tokens.push({type: 'output', line: line});
                 } else if (word == 'int') {
                     tokens.push({type: 'type', subtype: 'int', line: line});
+                } else if (word == 'float') {
+                    tokens.push({type: 'type', subtype: 'float', line: line});
                 } else if (word == 'bool') {
                     tokens.push({type: 'type', subtype: 'bool', line: line});
                 } else if (word == 'true') {
@@ -107,20 +117,28 @@ CobaltLexer.prototype.tokenize = function(code) {
                     tokens.push({type: 'literal', subtype: 'bool', value: 'false', line: line});
                 } else if (!isNaN(word)) {
                     if (word.indexOf('.') == -1) {
-                        tokens.push({type: 'literal', subtype: 'int', value: word, line: line});
+                        if (this.isValidInteger(word)) {
+                            tokens.push({type: 'literal', subtype: 'int', value: word, line: line});
+                        } else {
+                            throw new CobaltSyntaxError(line, $`Expected an integer literal, got '${word}' instead.`);
+                        }
                     } else {
-                        throw new CobaltSyntaxError(line, "Unexpected dot (.). Note that this version of Cobalt does not support floating point numbers.");
+                        if (this.isValidFloat(word)) {
+                            tokens.push({type: 'literal', subtype: 'float', value: word, line: line});
+                        } else {
+                            throw new CobaltSyntaxError(line, $`Expected a floating point literal, got '${word}' instead.`);
+                        }
                     }
                 } else {
                     if (this.isValidIdentifier(word)) {
                         tokens.push({type: 'identifier', value: word, line: line});
                     } else {
-                        throw new CobaltSyntaxError(line, "Invalid syntax. Expected identifier.");
+                        throw new CobaltSyntaxError(line, $`Expected an identifier, got '${word}' instead.`);
                     }
                 }
                 position += word.length;
             } else {
-                throw new CobaltSyntaxError(line, "Unable to find word end. Check wether you are missing a semicolon (;).");
+                throw new CobaltSyntaxError(line, "Unable to find word end. Check whether you are missing a semicolon (;).");
             }
         }
     }
@@ -130,14 +148,38 @@ CobaltLexer.prototype.tokenize = function(code) {
 }
 
 /**
-*   <p>Checks an identifier for validity.</p>
+*   <p>Checks whether a word is a valid identifier.</p>
 *
 *   @param {String} word    The word to check.
-*   @return {Boolean}       Returns whether the identifier is valid.
+*   @return {Boolean}       Returns whether the word is a valid identifier.
 */
 CobaltLexer.prototype.isValidIdentifier = function(word) {
 
     return this.identifierValidator.test(word);
+
+}
+
+/**
+*   <p>Checks whether a word is a valid integer.</p>
+*
+*   @param {String} word    The word to check.
+*   @return {Boolean}       Returns whether the word is a valid integer.
+*/
+CobaltLexer.prototype.isValidInteger = function(word) {
+
+    return this.integerValidator.test(word);
+
+}
+
+/**
+*   <p>Checks whether a word is a valid floating point number.</p>
+*
+*   @param {String} word    The word to check.
+*   @return {Boolean}       Returns whether the word is a valid floating point number.
+*/
+CobaltLexer.prototype.isValidFloat = function(word) {
+
+    return this.floatValidator.test(word);
 
 }
 
@@ -158,12 +200,12 @@ CobaltLexer.prototype.findNext = function(code, offset, tokens) {
 
     //Check for tokens argument validity
     if (tokens.length == 0) {
-        throw new CompilerError("Empty token list passed.","Lexer","findNext");
+        throw new CompilerError("Empty token list passed.", "Lexer", "findNext");
     }
 
     //Check for offset argument validity
     if (offset >= code.length) {
-        throw new CompilerError("Offset greater/equal then input code length.","Lexer","findNext");
+        throw new CompilerError("Offset greater/equal then input code length.", "Lexer", "findNext");
     }
 
     //Consider only tokens present in the code

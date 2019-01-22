@@ -1,7 +1,7 @@
 const {CompilerError} = require('../errors');
-const Lexer = require('../lexer');
+const CobaltLexer = require('../CobaltLexer');
 
-var lexer = new Lexer();
+var lexer = new CobaltLexer();
 
 var identifiers = ["abc", "_abc", "a12a", "_a12a", "3_a", "2", "a 9a", "a_3_3_a"];
 
@@ -67,3 +67,5 @@ for (var i = 0; i < snippets.length; i++) {
     var snippet = snippets[i];
     console.log(" $[" + snippet + "] > " + printTokens(lexer.tokenize(snippet)));
 }
+
+lexer.tokenize("test;");

@@ -1,14 +1,15 @@
 var lexerTests = {
-    testUtilities: require('./testUtilities')
-    // testWhitespace: require('./testWhitespace'),
-    // testNewLines: require('./testNewLines'),
-    // testOperators: require('./testOperators'),
-    // testDelimiters: require('./testDelimiters'),
-    // testTypes: require('./testTypes'),
-    // testKeywords: require('./testKeywords'),
-    // testIdentifiers: require('./testIdentifiers'),
-    // testLiterals: require('./testLiterals'),
-    // testComments: require('./testComments')
+    testValidation: require('./testValidation'),
+    testWhitespace: require('./testWhitespace'),
+    testNewLines: require('./testNewLines'),
+    testComments: require('./testComments'),
+    testDelimiters: require('./testDelimiters'),
+    testOperators: require('./testOperators'),
+    testTypes: require('./testTypeKeywords'),
+    testKeywords: require('./testSpecialKeywords'),
+    testIdentifiers: require('./testIdentifiers'),
+    testLiterals: require('./testLiterals'),
+    testLexerUtilities: require('./testLexerUtilities')
 }
 
 module.exports = lexerTests;
